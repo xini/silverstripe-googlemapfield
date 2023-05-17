@@ -4,7 +4,7 @@
     "description": "Save locations using latitude/longitude DataObject fields.",
     "keywords": ["maps","google", "googlemapfield", "silverstripe", "map", "geolocation"],
     "homepage": "https://github.com/xini/silverstripe-googlemapfield",
-    "license": "BSD",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Will Morgan",
