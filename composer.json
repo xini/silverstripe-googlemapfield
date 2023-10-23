@@ -15,6 +15,9 @@
     "require": {
         "silverstripe/framework": "^4 || ^5"
     },
+	"replace": {
+		"betterbrief/silverstripe-googlemapfield": "self.version"
+	},
     "autoload": {
         "psr-4": {
             "BetterBrief\\": "src/"
