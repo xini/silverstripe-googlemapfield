@@ -57,7 +57,7 @@ BetterBrief\GoogleMapField:
 or through `.env`
 
 ```
-APP_GOOGLE_MAPS_KEY=""
+APP_GOOGLE_MAPS_KEY=[google-api-key]
 ```
 
 ## Optional configuration
