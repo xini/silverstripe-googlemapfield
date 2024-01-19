@@ -28,19 +28,19 @@ class Store extends DataObject
         'Latitude' => 'Varchar',
         'Longitude' => 'Varchar',
     ];
-    
+
     public function getCMSFields() {
         $fields = parent::getCMSFiels();
-        
+
         // add the map field
         $fields->addFieldToTab('Root.Main', new GoogleMapField(
             $this,
             'Location'
         ));
-        
+
         // remove the lat / lng fields from the CMS
         $fields->removeFieldsFromTab('Root.Main', ['Latitude', 'Longitude']);
-        
+
         return $fields;
     }
 }
@@ -52,6 +52,12 @@ Remember to set your API key in your site's `config.yml`
 BetterBrief\GoogleMapField:
   default_options:
     api_key: '[google-api-key]'
+```
+
+or through `.env`
+
+```
+APP_GOOGLE_MAPS_KEY=""
 ```
 
 ## Optional configuration

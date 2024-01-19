@@ -12,14 +12,15 @@
 
 namespace BetterBrief;
 
-use SilverStripe\Forms\FormField;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Forms\HiddenField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Core\Environment;
+use SilverStripe\Forms\HiddenField;
 use SilverStripe\View\Requirements;
 use SilverStripe\ORM\DataObjectInterface;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Core\Convert;
+
 
 class GoogleMapField extends FormField {
 
@@ -175,7 +176,8 @@ class GoogleMapField extends FormField {
 		$gmapsParams = array(
 			'callback' => 'googlemapfieldInit',
 		);
-		if($key = $this->getOption('api_key')) {
+        $key = Environment::getEnv('APP_GOOGLE_MAPS_KEY') ?: $this->getOption('api_key');
+		if($key) {
 			$gmapsParams['key'] = $key;
 		}
 		$this->extend('updateGoogleMapsParams', $gmapsParams);
