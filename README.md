@@ -1,6 +1,6 @@
 # silverstripe-googlemapfield
 
-*This is a SS5 compatible fork of [https://github.com/BetterBrief/silverstripe-googlemapfield](https://github.com/BetterBrief/silverstripe-googlemapfield).*
+*This is a SS 5 & 6 compatible fork of [https://github.com/BetterBrief/silverstripe-googlemapfield](https://github.com/BetterBrief/silverstripe-googlemapfield).*
 
 Lets you record a precise location using latitude/longitude/zoom fields to a DataObject.
 
@@ -8,7 +8,7 @@ Displays a map using the Google Maps API. The user may then choose where to plac
 
 You can also search for locations using the search box, which uses the Google Maps Geocoding API.
 
-Supports SilverStripe 5
+Supports SilverStripe 5, 6
 
 ## Usage
 
