@@ -8,7 +8,7 @@ Displays a map using the Google Maps API. The user may then choose where to plac
 
 You can also search for locations using the search box, which uses the Google Maps Geocoding API.
 
-Supports SilverStripe 5, 6
+Supports SilverStripe 6
 
 ## Usage
 
@@ -32,14 +32,17 @@ class Store extends DataObject
     public function getCMSFields() {
         $fields = parent::getCMSFiels();
 
+        // remove the lat / lng fields from the CMS
+        $fields->removeByName([
+            'Latitude',
+            'Longitude'
+        ]);
+
         // add the map field
-        $fields->addFieldToTab('Root.Main', new GoogleMapField(
+        $fields->addFieldToTab('Root.Main', GoogleMapField::create(
             $this,
             'Location'
         ));
-
-        // remove the lat / lng fields from the CMS
-        $fields->removeFieldsFromTab('Root.Main', ['Latitude', 'Longitude']);
 
         return $fields;
     }
@@ -50,8 +53,7 @@ Remember to set your API key in your site's `config.yml`
 
 ```yml
 BetterBrief\GoogleMapField:
-  default_options:
-    api_key: '[google-api-key]'
+  api_key: '[google-api-key]'
 ```
 
 or through `.env`
@@ -74,11 +76,10 @@ To set options at run time pass through an array of options (3rd construct param
 ```php
 use BetterBrief\GoogleMapField;
 
-$field = new GoogleMapField(
+$field = GoogleMapField::create(
     $dataObject,
     'FieldName',
     [
-        'api_key' => 'my-api-key',
         'show_search_box' => false,
         'map' => [
             'zoom' => 10,
@@ -98,7 +99,7 @@ For example if we wanted to change the map type from a road map to satellite ima
 ```php
 use BetterBrief\GoogleMapField;
 
-$field = new GoogleMapField(
+$field = GoogleMapField::create(
     $object,
     'Location',
     [

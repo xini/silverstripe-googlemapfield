@@ -3,8 +3,8 @@ Name: googlemapfield
 Before: '*'
 ---
 BetterBrief\GoogleMapField:
+  api_key: null
   default_options:
-    api_key: null
     show_search_box: true
     field_names:
       Latitude: 'Latitude'
@@ -16,3 +16,7 @@ BetterBrief\GoogleMapField:
     default_field_values:
       Latitude: 30
       Longitude: 0
+
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - BetterBrief\GoogleMapFieldLeftAndMainExtension

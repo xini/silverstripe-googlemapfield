@@ -12,13 +12,12 @@
 
 namespace BetterBrief;
 
-use SilverStripe\ORM\DataObject;
+use Override;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormField;
-use SilverStripe\Forms\TextField;
-use SilverStripe\Core\Environment;
 use SilverStripe\Forms\HiddenField;
-use SilverStripe\View\Requirements;
+use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataObjectInterface;
 
 class GoogleMapField extends FormField
@@ -54,14 +53,14 @@ class GoogleMapField extends FormField
      * The merged version of the default and user specified options
      * @var array
      */
-    protected $options = array();
+    protected $options = [];
 
     /**
      * @param DataObject $data The controlling dataobject
      * @param string $title The title of the field
      * @param array $options Various settings for the field
      */
-    public function __construct(DataObject $data, $title, $options = array())
+    public function __construct(DataObject $data, $title, $options = [])
     {
         $this->data = $data;
 
@@ -74,6 +73,7 @@ class GoogleMapField extends FormField
     }
 
     // Auto generate a name
+    #[Override]
     public function getName(): string
     {
         $fieldNames = $this->getOption('field_names');
@@ -94,11 +94,7 @@ class GoogleMapField extends FormField
         $this->options = static::config()->default_options;
         foreach ($this->options as $name => &$value) {
             if (isset($options[$name])) {
-                if (is_array($value)) {
-                    $value = array_merge($value, $options[$name]);
-                } else {
-                    $value = $options[$name];
-                }
+                $value = is_array($value) ? array_merge($value, $options[$name]) : $options[$name];
             }
         }
     }
@@ -129,12 +125,13 @@ class GoogleMapField extends FormField
             'Zoom',
             $this->recordFieldData('Zoom')
         )->addExtraClass('googlemapfield-zoomfield no-change-track');
+
         $this->boundsField = HiddenField::create(
             $name . '[Bounds]',
             'Bounds',
             $this->recordFieldData('Bounds')
         )->addExtraClass('googlemapfield-boundsfield no-change-track');
-        $this->children = new FieldList(
+        $this->children = FieldList::create(
             $this->latField,
             $this->lngField,
             $this->zoomField,
@@ -157,47 +154,29 @@ class GoogleMapField extends FormField
      * @see https://developers.google.com/maps/documentation/javascript/reference
      * {@inheritdoc}
      */
-    public function Field($properties = array())
+    #[Override]
+    public function Field($properties = [])
     {
-        $jsOptions = array(
-            'coords' => array(
+        $jsOptions = [
+            'coords' => [
                 $this->recordFieldData('Latitude'),
                 $this->recordFieldData('Longitude')
-            ),
-            'map' => array(
+            ],
+            'map' => [
                 'zoom' => $this->recordFieldData('Zoom') ?: $this->getOption('map.zoom'),
                 'mapTypeId' => 'ROADMAP',
-            ),
-        );
+            ],
+        ];
 
         $jsOptions = array_replace_recursive($jsOptions, $this->options);
         $this->setAttribute('data-settings', json_encode($jsOptions));
-        $this->requireDependencies();
         return parent::Field($properties);
-    }
-
-    /**
-     * Set up and include any frontend requirements
-     * @return void
-     */
-    protected function requireDependencies()
-    {
-        $gmapsParams = array(
-            'callback' => 'googlemapfieldInit',
-        );
-        $key = Environment::getEnv('APP_GOOGLE_MAPS_KEY') ?: $this->getOption('api_key');
-        if ($key) {
-            $gmapsParams['key'] = $key;
-        }
-        $this->extend('updateGoogleMapsParams', $gmapsParams);
-        Requirements::css('innoweb/silverstripe-googlemapfield:client/css/GoogleMapField.css');
-        Requirements::javascript('innoweb/silverstripe-googlemapfield:client/js/GoogleMapField.js');
-        Requirements::javascript('//maps.googleapis.com/maps/api/js?' . http_build_query($gmapsParams));
     }
 
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function setValue($record, $data = null): static
     {
         $this->latField->setValue(
@@ -219,6 +198,7 @@ class GoogleMapField extends FormField
      * Take the latitude/longitude fields and save them to the DataObject.
      * {@inheritdoc}
      */
+    #[Override]
     public function saveInto(DataObjectInterface $record): static
     {
         $record->setCastedField($this->childFieldName('Latitude'), $this->latField->dataValue());
@@ -251,7 +231,7 @@ class GoogleMapField extends FormField
     public function getDefaultValue($name)
     {
         $fieldValues = $this->getOption('default_field_values');
-        return isset($fieldValues[$name]) ? $fieldValues[$name] : null;
+        return $fieldValues[$name] ?? null;
     }
 
     /**
@@ -280,8 +260,10 @@ class GoogleMapField extends FormField
     public function getOption($name)
     {
         // Quicker execution path for "."-free names
-        if (strpos($name, '.') === false) {
-            if (isset($this->options[$name])) return $this->options[$name];
+        if (!str_contains($name, '.')) {
+            if (isset($this->options[$name])) {
+                return $this->options[$name];
+            }
         } else {
             $names = explode('.', $name);
 
@@ -291,11 +273,13 @@ class GoogleMapField extends FormField
                 if (!isset($var[$n])) {
                     return null;
                 }
+
                 $var = $var[$n];
             }
 
             return $var;
         }
+        return null;
     }
 
     /**
@@ -307,7 +291,7 @@ class GoogleMapField extends FormField
     public function setOption($name, $val): static
     {
         // Quicker execution path for "."-free names
-        if (strpos($name, '.') === false) {
+        if (!str_contains($name, '.')) {
             $this->options[$name] = $val;
         } else {
             $names = explode('.', $name);
@@ -321,6 +305,7 @@ class GoogleMapField extends FormField
 
             $var = $val;
         }
+
         return $this;
     }
 }
