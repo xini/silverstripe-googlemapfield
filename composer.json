@@ -13,6 +13,7 @@
         }
     ],
     "require": {
+        "ext-json": "*",
         "silverstripe/framework": "^6"
     },
 	"replace": {

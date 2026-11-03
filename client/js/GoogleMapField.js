@@ -8,7 +8,8 @@
 
 	// Run this code for every googlemapfield
 	function initMapField(field) {
-		if(field.attr('data-gmapfield-inited') === true) {
+        field = $(field);
+        if(field.attr('data-gmapfield-inited') === true) {
 			return;
 		}
 		field.attr('data-gmapfield-inited', true);
@@ -134,10 +135,27 @@
 		var mapFields = $('.googlemapfield:visible').gmapfield();
 	}
 
+    const startObserver = function() {
+        var observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                Array.prototype.forEach.call(mutation.addedNodes, function (node) {
+                    if (node.nodeType !== 1 || !node.isConnected) {
+                        return;
+                    }
+                    if (node.matches('.googlemapfield') || node.querySelector('.googlemapfield')) {
+                        initMapField(node);
+                    }
+                });
+            });
+        });
+        observer.observe(document, { childList: true, subtree: true });
+    };
+
 	// Export the init function
 	window.googlemapfieldInit = function() {
 		gmapsAPILoaded = true;
 		initGoogleMapField();
+        startObserver();
 	}
 
 	// CMS stuff: set the init method to re-run if the page is saved or pjaxed

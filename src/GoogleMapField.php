@@ -171,8 +171,28 @@ class GoogleMapField extends FormField
         ];
 
         $fieldOptions = array_replace_recursive($fieldOptions, $this->options);
-        $this->setAttribute('data-settings', json_encode($fieldOptions));
+        $this->setAttribute('data-settings', json_encode($fieldOptions, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP));
+        $this->requireDependencies();
         return parent::Field($properties);
+    }
+
+    /**
+     * Set up and include any frontend requirements
+     * @return void
+     */
+    protected function requireDependencies()
+    {
+        $gmapsParams = array(
+            'callback' => 'googlemapfieldInit',
+        );
+        $key = Environment::getEnv('APP_GOOGLE_MAPS_KEY') ?: $this->getOption('api_key');
+        if ($key) {
+            $gmapsParams['key'] = $key;
+        }
+        $this->extend('updateGoogleMapsParams', $gmapsParams);
+        Requirements::css('innoweb/silverstripe-googlemapfield:client/css/GoogleMapField.css');
+        Requirements::javascript('innoweb/silverstripe-googlemapfield:client/js/GoogleMapField.js');
+        Requirements::javascript('//maps.googleapis.com/maps/api/js?' . http_build_query($gmapsParams));
     }
 
     /**
